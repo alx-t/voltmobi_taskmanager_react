@@ -15,6 +15,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'slim-rails'
 gem 'bootstrap-sass'
+gem 'react-rails'
+
+gem 'bcrypt'
 
 group :development, :test do
   gem 'byebug'
