@@ -18,6 +18,8 @@ gem 'bootstrap-sass'
 gem 'react-rails'
 
 gem 'bcrypt'
+gem 'faker'
+gem 'active_model_serializers'
 
 group :development, :test do
   gem 'byebug'

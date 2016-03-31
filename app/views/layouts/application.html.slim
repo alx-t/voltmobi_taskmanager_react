@@ -1,0 +1,26 @@
+html
+  head
+    title Task manager for VoltMobi
+    = stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true
+    = javascript_include_tag "application", "data-turbolinks-track" => true
+    = csrf_meta_tags
+
+  body
+    .container-fluid
+      nav.navbar.navbar-default
+        .container-fluid
+          .navbar-brand
+            = link_to 'Home', root_path
+          ul.nav.navbar-nav.navbar-right
+            li = link_to 'Log in', '#'
+            li = link_to 'Register', '#'
+
+    .col-md-10.main 
+      = yield
+
+  footer.navbar-fixed-bottom.row-fluid
+    .navbar-inner
+      .container
+        | by Tesevich Alexander
+        =<> link_to 'Github', 'https://github.com/alx-t'
+                                                                                                                                                                                
