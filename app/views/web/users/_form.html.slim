@@ -1,0 +1,11 @@
+= simple_form_for user do |f|
+  - if user.errors.any?
+    .error-messages.alert-danger
+      ul
+        - for message in user.errors.full_messages 
+          li = message
+  = f.input :email, label: 'Email', required: true
+  = f.input :password, label: 'Password'
+  = f.input :password_confirmation, label: 'Password confirmation'
+  = f.submit 'Create user',  class: 'btn btn-block btn-primary'
+

@@ -1,0 +1,8 @@
+= simple_form_for(:session, url: sessions_path) do |f|
+  - if @error_message
+    .error-messages.alert-danger
+      = @error_message
+  = f.input :email, label: 'Email', required: true
+  = f.input :password, label: 'Password'
+  = f.submit 'Log in',  class: 'btn btn-block btn-primary'
+

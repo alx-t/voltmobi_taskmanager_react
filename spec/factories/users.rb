@@ -5,7 +5,15 @@ FactoryGirl.define do
 
   factory :user do
     email
-    password_digest "MyString"
-    role "MyString"
+    password '123456'
+    password_confirmation '123456'
+    role "user"
+  end
+
+  factory :invalid_user, class: 'User' do
+    email
+    password '123'
+    password_confirmation '12345'
   end
 end
+
