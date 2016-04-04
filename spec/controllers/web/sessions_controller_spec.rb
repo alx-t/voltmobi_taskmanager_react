@@ -12,7 +12,7 @@ RSpec.describe Web::SessionsController, type: :controller do
 
   describe 'POST #create' do
     context 'with valid attributes' do
-      before { post :create, email: user.email, password: '123456' }
+      before { post :create, session: { email: user.email, password: user.password } }
 
       it 'creates a user session' do
         expect(session[:user_id]).to eq user.id
@@ -24,7 +24,7 @@ RSpec.describe Web::SessionsController, type: :controller do
     end
 
     context 'with invalid attributes' do
-      before { post :create, email: user.email, password: 'invalid' }
+      before { post :create, session: { email: user.email, password: 'invalid' } }
 
       it 'does not create a user session' do
         expect(session[:user_id]).to be_nil
@@ -42,7 +42,7 @@ RSpec.describe Web::SessionsController, type: :controller do
 
   describe 'DELETE #destroy' do
     before do
-      post :create, email: user.email, password: '123456'
+      post :create, session: { email: user.email, password: user.password }
       expect(session[:user_id]).to eq user.id
       delete :destroy
     end
