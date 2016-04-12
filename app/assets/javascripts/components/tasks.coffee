@@ -14,6 +14,7 @@ CommonTitle = React.createClass
         React.DOM.th null, 'Name'
         for title in @props.titles
           React.DOM.th {key: title}, title
+        React.DOM.th null, 'Actions'
 
 @Tasks = React.createClass
   displayName: 'Tasks'
@@ -40,9 +41,15 @@ CommonTitle = React.createClass
     window.ee.addListener 'Tasks.add', (task) ->
       nextTasks = self.state.tasks.concat(task)
       self.setState tasks: nextTasks
+    window.ee.addListener 'Tasks.delete', (task) ->
+      tasks = self.state.tasks.slice()
+      index = tasks.indexOf task
+      tasks.splice index, 1
+      self.replaceState tasks: tasks
 
   componentWillUnmount: ->
     window.ee.removeListener('Tasks.add')
+    window.ee.removeListener('Tasks.delete')
 
   renderTitle: ->
     switch @props.type

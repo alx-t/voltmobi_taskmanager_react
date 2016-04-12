@@ -7,6 +7,7 @@ RSpec.describe Web::Members::TasksController, type: :controller do
 
   describe 'GET #index' do
     it_behaves_like "HTTP Authenticable" do
+      let(:http_method) { 'get' }
       let(:http_path) { 'index' }
     end
 
@@ -58,6 +59,51 @@ RSpec.describe Web::Members::TasksController, type: :controller do
         it 'set unprocessable_entity status' do
           subject
           expect(response).to have_http_status(422)
+        end
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:user_task) { create :task, user: user }
+    let!(:task) { create :task }
+
+    #it_behaves_like "HTTP Authenticable" do
+    #  let(:http_method) { 'delete' }
+    #  let(:http_path) { "/members/tasks/#{user_task.id}" }
+    #end
+
+    it 'no authorized' do
+      delete :destroy, id: user_task
+      expect(response).to be_redirect
+    end
+
+    context 'authorized' do
+      before { sign_in user }
+
+      context "user's task" do
+        let(:subject) { delete :destroy, id: user_task }
+
+        it 'deletes the task' do
+          expect { subject }.to change(Task, :count).by(-1)
+        end
+
+        it 'get success status' do
+          subject
+          expect(response).to be_success
+        end
+      end
+
+      context "other user's task" do
+        let(:subject) { delete :destroy, id: task }
+
+        it 'deletes the task' do
+          expect { subject }.to_not change(Task, :count)
+        end
+
+        it 'get success status' do
+          subject
+          expect(response).to have_http_status(:unauthorized)
         end
       end
     end

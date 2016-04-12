@@ -3,6 +3,15 @@
 CommonTask = React.createClass
   displayName: 'CommonTask'
 
+  handleDelete: (e) ->
+    e.preventDefault(e)
+    $.ajax
+      method: 'DELETE'
+      url: "/members/tasks/#{ @props.task.id }"
+      dataType: 'JSON'
+      success: () =>
+        window.ee.emit('Tasks.delete', @props.task)
+
   render: ->
     React.DOM.tr null,
       React.DOM.td null, @props.task.id
@@ -10,6 +19,11 @@ CommonTask = React.createClass
       React.DOM.td null, @props.task.name
       for cell in @props.cells
         React.DOM.td {key: cell}, @props.task[cell]
+      React.DOM.td null,
+        React.DOM.a
+          className: 'btn btn-danger'
+          onClick: @handleDelete
+          'Delete'
   
 @Task = React.createClass
   displayName: 'Task'
