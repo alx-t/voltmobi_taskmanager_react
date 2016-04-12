@@ -1,6 +1,8 @@
 #
 
 CommonTask = React.createClass
+  displayName: 'CommonTask'
+
   render: ->
     React.DOM.tr null,
       React.DOM.td null, @props.task.id
@@ -10,6 +12,8 @@ CommonTask = React.createClass
         React.DOM.td {key: cell}, @props.task[cell]
   
 @Task = React.createClass
+  displayName: 'Task'
+
   commonTask: ->
     React.createElement(CommonTask, task: @props.task, cells: ['user_email'])
 

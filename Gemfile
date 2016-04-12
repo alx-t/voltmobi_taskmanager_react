@@ -15,8 +15,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'slim-rails'
 gem 'bootstrap-sass'
-gem 'react-rails'
 gem 'simple_form'
+
+gem 'react-rails'
 
 gem 'bcrypt'
 gem 'faker'

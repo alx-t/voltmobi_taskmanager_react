@@ -10,7 +10,10 @@ html
       nav.navbar.navbar-default
         .container-fluid
           .navbar-brand
-            = link_to 'Home', root_path
+            - if signed_in?
+              = link_to 'Home', members_tasks_path
+            - else
+              = link_to 'Home', root_path
           ul.nav.navbar-nav.navbar-right
             - if signed_in?
               li = link_to 'Log out', logout_path
