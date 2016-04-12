@@ -39,12 +39,11 @@ CommonTitle = React.createClass
   componentDidMount: ->
     self = this
     window.ee.addListener 'Tasks.add', (task) ->
-      nextTasks = self.state.tasks.concat(task)
-      self.setState tasks: nextTasks
+      tasks = React.addons.update(self.state.tasks, { $push: [task] })
+      self.setState tasks: tasks
     window.ee.addListener 'Tasks.delete', (task) ->
-      tasks = self.state.tasks.slice()
-      index = tasks.indexOf task
-      tasks.splice index, 1
+      index = self.state.tasks.indexOf task
+      tasks = React.addons.update(self.state.tasks, { $splice: [[index, 1]] })
       self.replaceState tasks: tasks
 
   componentWillUnmount: ->
@@ -53,7 +52,7 @@ CommonTitle = React.createClass
 
   renderTitle: ->
     switch @props.type
-      when 'common' then @commonTitle() 
+      when 'common' then @commonTitle()
       when 'user' then @userTitle()
       when 'admin' then @adminTitle()
 

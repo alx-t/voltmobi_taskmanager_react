@@ -34,3 +34,4 @@ module VoltMobiReact
     config.react.addons = true
   end
 end
+
