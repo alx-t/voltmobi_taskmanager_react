@@ -97,12 +97,78 @@ RSpec.describe Web::Members::TasksController, type: :controller do
       context "other user's task" do
         let(:subject) { delete :destroy, id: task }
 
-        it 'deletes the task' do
+        it 'does not delete the task' do
           expect { subject }.to_not change(Task, :count)
         end
 
-        it 'get success status' do
+        it 'get unauthorized status' do
           subject
+          expect(response).to have_http_status(:unauthorized)
+        end
+      end
+    end
+  end
+
+  describe 'PATCH #update' do
+    let!(:user_task) { create :task, user: user }
+    let!(:task) { create :task }
+
+    it 'no authorized' do
+      patch :update, id: user_task.id, task: user_task
+      expect(response).to be_redirect
+    end
+
+    context 'authorized' do
+      before { sign_in user }
+
+      context "user's task" do
+        context 'with valid attributes' do
+          before do
+            patch :update, id: user_task, task: { name: 'new name', description: 'new description' }
+          end
+
+          it 'change task attributes' do
+            user_task.reload
+            expect(user_task.name).to eq 'new name'
+            expect(user_task.description).to eq 'new description'
+          end
+
+          it 'get :unprocessable_entity status' do
+            expect(response).to be_success
+          end
+        end
+
+        context 'with invalid attributes' do
+          before do
+            @old_task = user_task
+            patch :update, id: user_task, task: { name: nil, description: 'new description' }
+          end
+
+          it 'does not change task attributes' do
+            user_task.reload
+            expect(user_task.name).to eq @old_task.name
+            expect(user_task.description).to eq @old_task.description
+          end
+
+          it 'get :unprocessable_entity status' do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+        end
+      end
+
+      context "other user's task" do
+        before do
+          @old_task = task
+          patch :update, id: task, task: { name: 'new name', description: 'new description' }
+        end
+
+        it 'does not change task attributes' do
+          task.reload
+          expect(task.name).to eq @old_task.name
+          expect(task.description).to eq @old_task.description
+        end
+
+        it 'get unauthorized status' do
           expect(response).to have_http_status(:unauthorized)
         end
       end

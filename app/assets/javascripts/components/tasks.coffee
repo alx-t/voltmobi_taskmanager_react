@@ -5,6 +5,9 @@ CommonTitle = React.createClass
 
   getDefaultProps: ->
     titles: ['User']
+  
+  contextTypes:
+    user_id: React.PropTypes.number
 
   render: ->
     React.DOM.thead null,
@@ -14,7 +17,8 @@ CommonTitle = React.createClass
         React.DOM.th null, 'Name'
         for title in @props.titles
           React.DOM.th {key: title}, title
-        React.DOM.th null, 'Actions'
+        if @context.user_id
+          React.DOM.th null, 'Actions'
 
 @Tasks = React.createClass
   displayName: 'Tasks'
@@ -22,6 +26,13 @@ CommonTitle = React.createClass
   getDefaultProps: ->
     tasks: []
     type: 'common'
+    user_id: null
+
+  childContextTypes:
+    user_id: React.PropTypes.number
+
+  getChildContext: ->
+    user_id: @props.user_id
 
   getInitialState: ->
     tasks: @props.tasks
@@ -45,10 +56,15 @@ CommonTitle = React.createClass
       index = self.state.tasks.indexOf task
       tasks = React.addons.update(self.state.tasks, { $splice: [[index, 1]] })
       self.replaceState tasks: tasks
+    window.ee.addListener 'Tasks.update', (task, data) ->
+      index = self.state.tasks.indexOf task
+      tasks = React.addons.update(self.state.tasks, { $splice: [[index, 1, data]] })
+      self.replaceState tasks: tasks
 
   componentWillUnmount: ->
     window.ee.removeListener('Tasks.add')
     window.ee.removeListener('Tasks.delete')
+    window.ee.removeListener('Tasks.update')
 
   renderTitle: ->
     switch @props.type

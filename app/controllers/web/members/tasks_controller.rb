@@ -1,6 +1,7 @@
 class Web::Members::TasksController < Web::ApplicationController
   before_action :authenticate
-  before_action :load_task, only: [:destroy]
+  before_action :load_task, only: [:destroy, :update]
+  before_action :verify_user, only: [:destroy, :update]
 
   def index
     @tasks = Task.user_tasks(current_user).as_json
@@ -11,17 +12,21 @@ class Web::Members::TasksController < Web::ApplicationController
     if @task.save
       render json: @task, root: false
     else
-      render json: @task.errors, status: :unprocessable_entity, text: 'test text'
+      render json: @task.errors, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if @task.update(task_params)
+      render json: @task, root:false
+    else
+      render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def destroy
-    if valid_user?
-      @task.destroy
-      head :no_content
-    else
-      render json: { errors: 'You can not have permission for this operation' }, status: :unauthorized
-    end
+    @task.destroy
+    head :no_content
   end
 
   private
@@ -32,6 +37,12 @@ class Web::Members::TasksController < Web::ApplicationController
 
   def load_task
     @task = Task.find_by(id: params[:id])
+  end
+
+  def verify_user
+    unless valid_user?
+      render json: { errors: 'You can not have permission for this operation' }, status: :unauthorized
+    end
   end
 
   def valid_user?
