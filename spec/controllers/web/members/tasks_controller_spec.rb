@@ -68,11 +68,6 @@ RSpec.describe Web::Members::TasksController, type: :controller do
     let!(:user_task) { create :task, user: user }
     let!(:task) { create :task }
 
-    #it_behaves_like "HTTP Authenticable" do
-    #  let(:http_method) { 'delete' }
-    #  let(:http_path) { "/members/tasks/#{user_task.id}" }
-    #end
-
     it 'no authorized' do
       delete :destroy, id: user_task
       expect(response).to be_redirect
