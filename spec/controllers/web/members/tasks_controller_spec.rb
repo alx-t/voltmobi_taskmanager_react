@@ -169,9 +169,5 @@ RSpec.describe Web::Members::TasksController, type: :controller do
       end
     end
   end
-
-  def sign_in(user)
-    session[:user_id] = user.id
-  end
 end
 

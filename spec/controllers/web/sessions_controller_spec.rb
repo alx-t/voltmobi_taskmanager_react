@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Web::SessionsController, type: :controller do
   let!(:user) { create :user }
+  let!(:admin) { create :user, role: 'admin' }
 
   describe 'GET #new' do
     it 'renders new view' do
@@ -36,6 +37,14 @@ RSpec.describe Web::SessionsController, type: :controller do
 
       it 'assigns error message' do
         expect(assigns(:error_message)).to include "Invalid email/password"
+      end
+    end
+
+    context 'admin user' do
+      before { post :create, session: { email: admin.email, password: admin.password } }
+
+      it 'redirect to admin tasks view' do
+        expect(response).to redirect_to admin_tasks_path
       end
     end
   end
