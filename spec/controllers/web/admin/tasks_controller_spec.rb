@@ -27,6 +27,7 @@ RSpec.describe Web::Admin::TasksController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    ###
     let!(:task) { create :task }
 
     it 'not authorized' do
@@ -45,6 +46,43 @@ RSpec.describe Web::Admin::TasksController, type: :controller do
 
       it 'get success status' do
         expect(response).to be_success
+      end
+    end
+  end
+
+  describe 'POST #create' do
+    it_behaves_like "HTTP Authenticable" do
+      let(:http_method) { 'post' }
+      let(:http_path) { 'create' }
+    end
+
+    context 'authorized' do
+      before { sign_in admin }
+
+      context 'with valid attributes' do
+        let(:subject) { post :create, task: attributes_for(:task) }
+
+        it 'saves the new task in the database' do
+          expect { subject }.to change(Task, :count).by(1)
+        end
+
+        it 'set success status' do
+          subject
+          expect(response).to be_success
+        end
+      end
+
+      context 'with invalid attributes' do
+        let(:subject) { post :create, task: attributes_for(:invalid_task) }
+
+        it 'does not save the task' do
+          expect { subject }.to_not change(Task, :count)
+        end
+
+        it 'set unprocessable_entity status' do
+          subject
+          expect(response).to have_http_status(422)
+        end
       end
     end
   end
