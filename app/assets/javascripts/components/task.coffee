@@ -1,10 +1,11 @@
 #
 
-CommonTask = React.createClass
-  displayName: 'CommonTask'
+@Task = React.createClass
+  displayName: 'Task'
 
   contextTypes:
     user_id: React.PropTypes.number
+    type: React.PropTypes.string
 
   getInitialState: ->
     edit: false
@@ -13,7 +14,7 @@ CommonTask = React.createClass
     e.preventDefault(e)
     $.ajax
       method: 'DELETE'
-      url: "/members/tasks/#{ @props.task.id }"
+      url: window.type(@context.type).link + "#{ @props.task.id }"
       dataType: 'JSON'
       success: () =>
         window.ee.emit('Tasks.delete', @props.task)
@@ -29,7 +30,7 @@ CommonTask = React.createClass
       description: ReactDOM.findDOMNode(@refs.description).value
     $.ajax
       method: 'PATCH'
-      url: "/members/tasks/#{ @props.task.id }"
+      url: window.type(@context.type).link + "#{ @props.task.id }"
       dataType: 'JSON'
       data:
         task: data
@@ -42,7 +43,7 @@ CommonTask = React.createClass
       React.DOM.td null, @props.task.id
       React.DOM.td null, (new Date(Date.parse(@props.task.task_created_at))).toLocaleString("ru")
       React.DOM.td null, @props.task.name
-      for cell in @props.cells
+      for cell in window.type(@context.type).cells
         React.DOM.td {key: cell}, @props.task[cell]
       if @context.user_id
         React.DOM.td null,
@@ -65,7 +66,7 @@ CommonTask = React.createClass
           type: 'text'
           defaultValue: @props.task.name
           ref: 'name'
-      for cell in @props.cells
+      for cell in window.type(@context.type).cells
         React.DOM.td {key: cell},
           if cell == 'description'
             React.DOM.input
@@ -91,24 +92,3 @@ CommonTask = React.createClass
     else
       @taskRow()
   
-@Task = React.createClass
-  displayName: 'Task'
-
-  commonTask: ->
-    React.createElement(CommonTask, task: @props.task, cells: ['user_email'])
-
-  userTask: ->
-    React.createElement(CommonTask, task: @props.task, cells: ['description', 'state'])
-
-  adminTask: ->
-    React.createElement(CommonTask, task: @props.task, cells: ['user_email', 'description', 'state'])
-
-  renderTask: ->
-    switch @props.type
-      when 'common' then @commonTask()
-      when 'user' then @userTask()
-      when 'admin' then @adminTask()
-
-  render: ->
-    @renderTask()
-

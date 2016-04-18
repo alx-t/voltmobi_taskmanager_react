@@ -1,4 +1,4 @@
-# 
+#
 
 CommonTitle = React.createClass
   displayName: 'CommonTitle'
@@ -30,22 +30,15 @@ CommonTitle = React.createClass
 
   childContextTypes:
     user_id: React.PropTypes.number
+    type: React.PropTypes.string
 
   getChildContext: ->
     user_id: @props.user_id
+    type: @props.type
 
   getInitialState: ->
     tasks: @props.tasks
     type: @props.type
-
-  commonTitle: ->
-    React.createElement(CommonTitle, titles: ['User'])
-
-  userTitle: ->
-    React.createElement(CommonTitle, titles: ['Description', 'Status'])
-  
-  adminTitle: ->
-    React.createElement(CommonTitle, titles: ['User', 'Description', 'Status'])
 
   componentDidMount: ->
     self = this
@@ -67,10 +60,7 @@ CommonTitle = React.createClass
     window.ee.removeListener('Tasks.update')
 
   renderTitle: ->
-    switch @props.type
-      when 'common' then @commonTitle()
-      when 'user' then @userTitle()
-      when 'admin' then @adminTitle()
+    React.createElement(CommonTitle, titles: window.type(@props.type).titles)
 
   renderForm: ->
     if @props.user_id
@@ -90,5 +80,5 @@ CommonTitle = React.createClass
         @renderTitle()
         React.DOM.tbody null,
           for task in @state.tasks
-            React.createElement Task, key: task.id, task: task, type: @props.type
+            React.createElement Task, key: task.id, task: task
 
