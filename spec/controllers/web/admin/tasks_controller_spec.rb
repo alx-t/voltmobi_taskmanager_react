@@ -27,16 +27,13 @@ RSpec.describe Web::Admin::TasksController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    ###
-    let!(:task) { create :task }
-
     it 'not authorized' do
-      delete :destroy, id: task
+      delete :destroy, id: tasks.first
       expect(response).to be_redirect
     end
 
     context 'authorized' do
-      let(:subject) { delete :destroy, id: task }
+      let(:subject) { delete :destroy, id: tasks.first }
 
       before { sign_in admin }
 
@@ -82,6 +79,70 @@ RSpec.describe Web::Admin::TasksController, type: :controller do
         it 'set unprocessable_entity status' do
           subject
           expect(response).to have_http_status(422)
+        end
+      end
+    end
+  end
+
+  describe 'PATCH #update' do
+    let!(:admin_task) { create :task, user: admin }
+
+    it 'no authorized' do
+      patch :update, id: admin_task.id, task: admin_task
+      expect(response).to be_redirect
+    end
+
+    context 'authorized' do
+      before { sign_in admin }
+
+      context "admin's task" do
+        context 'with valid attributes' do
+          before do
+            patch :update, id: admin_task, task: { name: 'new name', description: 'new description' }
+          end
+
+          it 'changes task attributes' do
+            admin_task.reload
+            expect(admin_task.name).to eq 'new name'
+            expect(admin_task.description).to eq 'new description'
+          end
+
+          it 'get success status' do
+            expect(response).to be_success
+          end
+        end
+
+        context 'with invalid attributes' do
+          before do
+            @old_task = admin_task
+            patch :update, id: admin_task, task: { name: nil, description: 'new description' }
+          end
+
+          it 'does not change task attributes' do
+            admin_task.reload
+            expect(admin_task.name).to eq @old_task.name
+            expect(admin_task.description).to eq @old_task.description
+          end
+
+          it 'get :unprocessable_entity status' do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+        end
+      end
+
+      context "other user's task" do
+        before do
+          patch :update, id: tasks.first, task: { name: 'new name', description: 'new description' }
+        end
+
+        it 'changes task attributes' do
+          tasks.first.reload
+          expect(tasks.first.name).to eq 'new name'
+          expect(tasks.first.description).to eq 'new description'
+        end
+
+        it 'get success status' do
+          expect(response).to be_success
         end
       end
     end

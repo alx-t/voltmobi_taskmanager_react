@@ -1,6 +1,6 @@
 class Web::Admin::TasksController < Web::ApplicationController
   before_action :authenticate
-  before_action :load_task, only: [:destroy]
+  before_action :load_task, only: [:destroy, :update]
 
   def index
     @tasks = Task.all.as_json
@@ -17,6 +17,14 @@ class Web::Admin::TasksController < Web::ApplicationController
       render json: @task, root: false
     else
       render json: @task.errors, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if @task.update(task_params)
+      render json: @task, root:false
+    else
+      render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

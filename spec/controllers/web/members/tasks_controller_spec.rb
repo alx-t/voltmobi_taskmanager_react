@@ -128,7 +128,7 @@ RSpec.describe Web::Members::TasksController, type: :controller do
             expect(user_task.description).to eq 'new description'
           end
 
-          it 'get :unprocessable_entity status' do
+          it 'get success status' do
             expect(response).to be_success
           end
         end
