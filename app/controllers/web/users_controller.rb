@@ -8,7 +8,6 @@ class Web::UsersController < Web::ApplicationController
     @user = User.new(user_params)
     if @user.save
       session[:user_id] = @user.id
-      # TODO: modify path add notice
       redirect_to members_tasks_path
     else
       render :new

@@ -1,5 +1,32 @@
 #
 
+SelectUsers = React.createClass
+  getInitialState: ->
+    options: []
+    selectedUserId: undefined
+
+  componentDidMount: ->
+    $.get
+      url: '/admin/users'
+      success: @successHandler
+
+  successHandler: (data) ->
+    self = this
+    user = $.grep data, (e) -> e.email == self.props.selectedValue
+    @setState selectedUserId: user[0].id
+    @setState options: data
+
+  handleChange: (e) ->
+    @setState selectedUserId: e.target.value
+    @props.changeUserHandler e.target.value
+
+  render: ->
+    React.DOM.select
+      className: 'form-control'
+      value: @state.selectedUserId
+      onChange: @handleChange
+      React.DOM.option(value: user.id, key: user.id, user.email) for user in @state.options
+
 @Task = React.createClass
   displayName: 'Task'
 
@@ -9,6 +36,10 @@
 
   getInitialState: ->
     edit: false
+    selectedUserId: undefined
+
+  handleChangeUser: (userId) ->
+    @setState selectedUserId: userId
 
   handleDelete: (e) ->
     e.preventDefault(e)
@@ -28,6 +59,7 @@
     data =
       name: ReactDOM.findDOMNode(@refs.name).value
       description: ReactDOM.findDOMNode(@refs.description).value
+      user_id: @state.selectedUserId
     $.ajax
       method: 'PATCH'
       url: window.type(@context.type).link + "#{ @props.task.id }"
@@ -68,14 +100,17 @@
           ref: 'name'
       for cell in window.type(@context.type).cells
         React.DOM.td {key: cell},
-          if cell == 'description'
-            React.DOM.input
-              className: 'form-control'
-              type: 'text'
-              defaultValue: @props.task[cell]
-              ref: cell
-          else
-            @props.task[cell]
+          switch cell
+            when 'description'
+              React.DOM.input
+                className: 'form-control'
+                type: 'text'
+                defaultValue: @props.task[cell]
+                ref: cell
+            when 'user_email'
+              React.createElement SelectUsers, changeUserHandler: @handleChangeUser, selectedValue: @props.task.user_email
+            else
+              @props.task[cell]
       React.DOM.td null,
         React.DOM.a
           className: 'btn btn-default'

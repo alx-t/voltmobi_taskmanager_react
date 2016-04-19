@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
     namespace :admin do
       resources :tasks
+      resources :users, only: [:index]
     end
 
     namespace :members do

@@ -35,6 +35,7 @@ class Web::Admin::TasksController < Web::ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:name, :description)
+    params.require(:task).permit(:name, :description, :user_id)
   end
 end
+

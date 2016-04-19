@@ -131,14 +131,17 @@ RSpec.describe Web::Admin::TasksController, type: :controller do
       end
 
       context "other user's task" do
+        let!(:user) { create :user }
+
         before do
-          patch :update, id: tasks.first, task: { name: 'new name', description: 'new description' }
+          patch :update, id: tasks.first, task: { name: 'new name', description: 'new description', user_id: user.id }
         end
 
         it 'changes task attributes' do
           tasks.first.reload
           expect(tasks.first.name).to eq 'new name'
           expect(tasks.first.description).to eq 'new description'
+          expect(tasks.first.user_id).to eq user.id
         end
 
         it 'get success status' do
