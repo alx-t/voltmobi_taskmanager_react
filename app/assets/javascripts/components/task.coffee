@@ -74,7 +74,13 @@ SelectUsers = React.createClass
     React.DOM.tr null,
       React.DOM.td null, @props.task.id
       React.DOM.td null, (new Date(Date.parse(@props.task.task_created_at))).toLocaleString("ru")
-      React.DOM.td null, @props.task.name
+      if @context.user_id
+        React.DOM.td null,
+          React.DOM.a
+            href: "/members/tasks/1"
+            @props.task.name
+      else
+        React.DOM.td null, @props.task.name
       for cell in window.type(@context.type).cells
         React.DOM.td {key: cell}, @props.task[cell]
       if @context.user_id
@@ -126,4 +132,4 @@ SelectUsers = React.createClass
       @taskForm()
     else
       @taskRow()
-  
+

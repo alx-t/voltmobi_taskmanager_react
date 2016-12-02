@@ -1,0 +1,15 @@
+h3
+  | Task #
+  = @task.id
+br
+h4
+  = @task.name
+h4
+  = @task.description
+br
+| Created at:
+=<> to_local_date @task.created_at
+br
+- if @current_user.role == 'admin'
+  | Assigned to:
+  =<> @task.user.email

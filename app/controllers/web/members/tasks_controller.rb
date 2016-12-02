@@ -1,6 +1,6 @@
 class Web::Members::TasksController < Web::ApplicationController
   before_action :authenticate
-  before_action :load_task, only: [:destroy, :update]
+  before_action :load_task, only: [:destroy, :update, :show]
   before_action :verify_user, only: [:destroy, :update]
 
   def index
@@ -16,11 +16,15 @@ class Web::Members::TasksController < Web::ApplicationController
     end
   end
 
+  def show
+  end
+
   def update
     if @task.update(task_params)
       render json: @task, root:false
     else
-      render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @task.errors.full_messages },
+              status: :unprocessable_entity
     end
   end
 
@@ -41,7 +45,8 @@ class Web::Members::TasksController < Web::ApplicationController
 
   def verify_user
     unless valid_user?
-      render json: { errors: 'You can not have permission for this operation' }, status: :unauthorized
+      render json: { errors: 'You can not have permission for this operation' },
+              status: :unauthorized
     end
   end
 
